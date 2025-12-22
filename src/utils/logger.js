@@ -11,8 +11,6 @@ const logger = createLogger({
   ),
   transports: [
     new transports.Console(), // tampilkan log di console
-    new transports.File({ filename: 'logs/error.log', level: 'error' }), // khusus error
-    new transports.File({ filename: 'logs/combined.log' }), // semua log
   ],
 });
 
