@@ -17,7 +17,9 @@ export async function login(req, res, next) {
         id: decoded.id,
         name: decoded.name,
         username: decoded.username,
-        role: decoded.role,
+        email: decoded.email,
+        poin: decoded.poin,
+        role: decoded.role
       },
       REFRESH_SECRET,
       { expiresIn: '8h' } 
@@ -59,7 +61,9 @@ export async function refreshToken(req, res) {
         id: decoded.id,
         name: decoded.name,
         username: decoded.username,
-        role: decoded.role,
+        email: decoded.email,
+        poin: decoded.poin,
+        role: decoded.role
       },
       SECRET_KEY,
       { expiresIn: '1h' } // atau sesuaikan

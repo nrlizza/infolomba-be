@@ -44,7 +44,7 @@ export function handleResult(res, result) {
     const isArray = Array.isArray(result.data);
     const empty = isArray ? result.data.length === 0 : result.data === null;
 
-    if (empty) return response.notFound(res, result.message || "Data not found");
+    if (empty) return response.success(res, result.message || []);
 
     // Payload clean: data di root, pagination/meta di root juga
     const data = result.data;

@@ -14,6 +14,8 @@ export async function loginUser(username, password, role) {
     id: user.id_user,
     name: user.name,
     username: user.username,
+    email: user.email,
+    poin: user.poin,
     role: user.role,
   };
 

@@ -5,7 +5,8 @@ import { snap } from "../../config/midtrans.js";
 export const createPaymentService = async ({ id_user, id_lomba, name, email }) => {
     try {
         // 1️⃣ ambil data lomba
-        const lomba = await model.getLombaById(id_lomba);
+        const [lomba, userPoin] = await Promise.all([model.getHtmLombaById(id_lomba), model.getPoinUser(id_user)]);
+
         if (!lomba?.data) throw new Error("Lomba tidak ditemukan");
 
         const amount = lomba.data.harga ?? 0;
@@ -26,6 +27,8 @@ export const createPaymentService = async ({ id_user, id_lomba, name, email }) =
                 amount,
                 status: "PAID", // langsung PAID
             });
+
+            await model.updatePoinUser(id_user, userPoin?.data?.poin + 10);
 
             return {
                 free: true,
@@ -105,10 +108,50 @@ export const handleMidtransNotification = async (notification) => {
         status: statusPembayaran,
     });
 
-    console.log(`[MIDTRANS] ${order_id} -> ${statusPembayaran}`);
+    const result = await model.getRiwayatByOrderId(order_id);
+
+    const poin = await model.getPoinUser(result?.data?.id_user);
+
+    if (statusPembayaran === "PAID") {
+        // Beri poin jika pembayaran berhasil
+        await model.updatePoinUser(result?.data?.id_user, poin?.data?.poin + 10);
+    }
 };
 
 export async function getLombaByIdAndUser(id_lomba, id_user) {
-  const result = await model.getLombaByIdAndUser(id_lomba, id_user);
-  return result;
+    const result = await model.getLombaByIdAndUser(id_lomba, id_user);
+    return result;
 }
+
+export const reedemPoin = async ({ id_user, id_lomba }) => {
+    try {
+
+        // 1️⃣ ambil data lomba
+        const [lomba, userPoin] = await Promise.all([model.getHtmLombaById(id_lomba), model.getPoinUser(id_user)]);
+
+        if (!lomba?.data) throw new Error("Lomba tidak ditemukan");
+
+        const amount = lomba.data.harga ?? 0;
+
+        const orderId = `LOMBA-${id_lomba}-${id_user}-${Date.now()}`;
+
+        const riwayat = await model.insertRiwayatLomba({
+            id_user,
+            id_lomba,
+            orderId,
+            amount,
+            status: "PAID", // langsung PAID
+        });
+
+        await model.updatePoinUser(id_user, userPoin?.data?.poin - 100);
+
+        return {
+            free: true,
+            message: "Pendaftaran lomba gratis berhasil",
+            id_riwayat: riwayat.id_riwayat,
+        };
+    } catch (error) {
+        console.error("Service Error:", error);
+        throw error;
+    }
+};

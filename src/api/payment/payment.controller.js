@@ -43,3 +43,23 @@ export async function getLombaByIdAndUser(req, res) {
     next(err);
   }
 }
+
+export const reedemPoin = async (req, res) => {
+  try {
+    const { id_user, id_lomba } = req.body;
+
+    if (!id_user || !id_lomba) {
+      return res.status(400).json({ message: "id_user & id_lomba wajib" });
+    }
+
+    const data = await service.reedemPoin({
+      id_user,
+      id_lomba
+    });
+
+    res.status(200).json(data);
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

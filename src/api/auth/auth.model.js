@@ -5,7 +5,9 @@ export async function loginUser(username, password, role) {
     SELECT 
       a.id_user,
       a.name, 
-      a.username, 
+      a.username,
+      a.email,
+      a.poin,
       b.role 
     FROM master_user a
     INNER JOIN master_role b ON a.id_role = b.id_role  
