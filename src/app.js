@@ -18,7 +18,7 @@ app.use((req, res, next) => {
 
 app.use(helmet());
 
-const allowedOrigins = ['http://localhost:5173'];
+const allowedOrigins = ['http://localhost:5173', 'https://infolomba-fe.vercel.app'];
 
 app.use(cors({
   origin: (origin, callback) => {
