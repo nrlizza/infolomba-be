@@ -109,12 +109,14 @@ export const handleMidtransNotification = async (notification) => {
     });
 
     const result = await model.getRiwayatByOrderId(order_id);
-
+    const idUser = result?.data?.id_user ? result?.data?.id_user : 2;
+    
     const poin = await model.getPoinUser(result?.data?.id_user);
-
+    const userPoin = poin?.data?.poin ? poin?.data?.poin : 0;
+    
     if (statusPembayaran === "PAID") {
         // Beri poin jika pembayaran berhasil
-        await model.updatePoinUser(result?.data?.id_user, poin?.data?.poin + 10);
+        await model.updatePoinUser(idUser, userPoin + 10);
     }
 };
 
