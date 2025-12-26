@@ -40,7 +40,7 @@ export async function login(req, res, next) {
       maxAge: 60 * 60 * 1000,
     });
 
-    res.json({ message: 'Login successful' });
+    res.json({ token });
   } catch (err) {
     next(err);
   }
