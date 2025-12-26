@@ -26,7 +26,7 @@ export const upload = (fields = []) => {
   return fields.length > 0 ? multerUpload.fields(fields) : multerUpload.single('file');
 };
 
-export async function uploadFileToSupabase(file, folder = 'test') {
+export async function uploadFileToSupabase(file, folder = 'poster') {
   if (!file) return null;
 
   const fileName = `${Date.now()}_${file.originalname}`;   // <-- nama file
