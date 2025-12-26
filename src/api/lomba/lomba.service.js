@@ -11,7 +11,7 @@ export async function insertLomba(data, files) {
         const fileList = files[key];
         for (let i = 0; i < fileList.length; i++) {
           const file = fileList[i];
-          const result = await uploadFileToSupabase(file, "test");
+          const result = await uploadFileToSupabase(file, "poster");
 
           if (!result || !result.fileName) {
             uploadStatus = "UPLOAD_FAILED";
@@ -55,7 +55,7 @@ export async function getAllLomba(page = 1, limit = 9, filters = {}) {
     return {
       ...item,
       image_url: encodedImage
-        ? `${process.env.SUPABASE_URL}/storage/v1/object/public/${process.env.SUPABASE_BUCKET}/test/${encodedImage}`
+        ? `${process.env.SUPABASE_URL}/storage/v1/object/public/${process.env.SUPABASE_BUCKET}/poster/${encodedImage}`
         : null
     };
   });
@@ -74,7 +74,7 @@ export async function getLombaById(id_lomba) {
     // Add image URL if image exists
     if (result.data.image) {
       const encodedImage = encodeURIComponent(result.data.image);
-      result.data.image_url = `${process.env.SUPABASE_URL}/storage/v1/object/public/${process.env.SUPABASE_BUCKET}/test/${encodedImage}`;
+      result.data.image_url = `${process.env.SUPABASE_URL}/storage/v1/object/public/${process.env.SUPABASE_BUCKET}/poster/${encodedImage}`;
     }
 
     // Ensure numeric values are numbers
@@ -123,7 +123,7 @@ export async function updateLomba(id_lomba, data, files, id_user) {
         const fileList = files[key];
         for (let i = 0; i < fileList.length; i++) {
           const file = fileList[i];
-          const result = await uploadFileToSupabase(file, "test");
+          const result = await uploadFileToSupabase(file, "poster");
 
           if (!result || !result.fileName) {
             uploadStatus = "UPLOAD_FAILED";
