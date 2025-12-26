@@ -30,6 +30,7 @@ export async function login(req, res, next) {
       httpOnly: true,
       secure: true, 
       sameSite: 'none',
+      secureCookie: true,
       maxAge: 8 * 60 * 60 * 1000,
     });
 
@@ -37,6 +38,7 @@ export async function login(req, res, next) {
       httpOnly: false, 
       secure: true,
       sameSite: 'none',
+      secureCookie: true,
       maxAge: 60 * 60 * 1000,
     });
 
