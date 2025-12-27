@@ -36,3 +36,29 @@ export async function getRiwayatLombaByUser(id_user, page, limit) {
     throw error;
   }
 }
+
+export async function getDaftarPesertaLomba(id_lomba, page, limit) {
+    try {
+        if (!id_lomba) {
+            return {
+                success: false,
+                status: 400,
+                message: "ID lomba diperlukan",
+                data: [],
+            };
+        }
+
+        const result = await model.getDaftarPesertaLomba(id_lomba);
+
+        return {
+            success: true,
+            status: 200,
+            message: "Daftar peserta lomba berhasil diambil",
+            data: result.data,
+            pagination: result.pagination
+        };
+    } catch (error) {
+        console.error("❌ Error get daftar peserta lomba:", error);
+        throw error;
+    }
+}

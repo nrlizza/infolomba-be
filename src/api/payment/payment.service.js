@@ -114,7 +114,7 @@ export const handleMidtransNotification = async (notification) => {
     const poin = await model.getPoinUser(result?.data?.id_user);
     const userPoin = poin?.data?.poin ? poin?.data?.poin : 0;
     
-    if (statusPembayaran === "PAID") {
+    if (statusPembayaran === "PAID" && userPoin < 100) {
         // Beri poin jika pembayaran berhasil
         await model.updatePoinUser(idUser, userPoin + 10);
     }
