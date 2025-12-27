@@ -61,6 +61,7 @@ export async function getDaftarPesertaLomba(id_lomba, page = 1, limit = 10) {
       LEFT JOIN master_user b ON a.id_user = b.id_user
       LEFT JOIN lomba c ON a.id_lomba = c.id_lomba
       WHERE a.id_lomba = $1
+      LIMIT $2 OFFSET $3
       ORDER BY a.tanggal_daftar DESC
     `;
 
