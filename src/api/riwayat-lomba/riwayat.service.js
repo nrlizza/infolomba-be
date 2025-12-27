@@ -48,7 +48,7 @@ export async function getDaftarPesertaLomba(id_lomba, page, limit) {
             };
         }
 
-        const result = await model.getDaftarPesertaLomba(id_lomba);
+        const result = await model.getDaftarPesertaLomba(id_lomba, page, limit);
 
         return {
             success: true,
