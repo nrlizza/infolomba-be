@@ -49,31 +49,34 @@ export async function getDaftarPesertaLomba(id_lomba, page = 1, limit = 10) {
     const offset = (page - 1) * limit;
 
     const sql = `
-      SELECT 
-        a.id_user,
-        b.name,
-        b.nomor_telephone,
-        c.nama_lomba,
-        TO_CHAR(a.tanggal_daftar, 'YYYY-MM-DD') as tanggal_daftar,
-        a.status_pembayaran,
-        a.jumlah_bayar
-      FROM riwayat_lomba a
-      LEFT JOIN master_user b ON a.id_user = b.id_user
-      LEFT JOIN lomba c ON a.id_lomba = c.id_lomba
-      WHERE a.id_lomba = $1
-      LIMIT $2 OFFSET $3
-      ORDER BY a.tanggal_daftar DESC
+        SELECT 
+            a.id_user,
+            b.name,
+            b.nomor_telephone,
+            c.nama_lomba,
+            TO_CHAR(a.tanggal_daftar, 'YYYY-MM-DD') AS tanggal_daftar,
+            a.status_pembayaran,
+            a.jumlah_bayar
+        FROM riwayat_lomba a
+        LEFT JOIN master_user b ON a.id_user = b.id_user
+        LEFT JOIN lomba c ON a.id_lomba = c.id_lomba
+        WHERE a.id_lomba = $1
+        ORDER BY a.tanggal_daftar DESC
+        LIMIT $2 OFFSET $3
     `;
 
     const countSql = `
-      SELECT COUNT(*) AS total
-      FROM riwayat_lomba
-      WHERE id_lomba = $1
+        SELECT COUNT(*) AS total
+        FROM riwayat_lomba
+        WHERE id_lomba = $1
     `;
 
-    const [result, countResult] = await Promise.all([db.query(sql, [id_lomba]), db.query(countSql, [id_lomba])]);
+    const [result, countResult] = await Promise.all([
+        db.query(sql, [id_lomba, limit, offset]),
+        db.query(countSql, [id_lomba]),
+    ]);
 
-    const total = parseInt(countResult.rows[0].total);
+    const total = Number(countResult.rows[0].total);
     const totalPages = Math.ceil(total / limit);
 
     return {
