@@ -8,6 +8,9 @@ import jenisRoutes from './master-jenis/jenis.routes.js';
 import pembayaranRoutes from './status-pembayaran/pembayaran.routes.js';
 import riwayatRoutes from './riwayat-lomba/riwayat.routes.js';
 import paymentRoutes from './payment/payment.routes.js';
+import { authenticate } from '../middleware/auth.middleware.js';
+import chatRoutes from './chat/chat.routes.js';
+import favoriteRoutes from './favorite/favorite.routes.js';
 
 const router = express.Router();
 
@@ -21,5 +24,7 @@ router.use('/jenis', jenisRoutes);
 router.use('/pembayaran', pembayaranRoutes);
 router.use('/riwayat-lomba', riwayatRoutes);  
 router.use('/payment', paymentRoutes);
+router.use('/chat', chatRoutes);
+router.use('/favorite', favoriteRoutes);
 
 export default router;

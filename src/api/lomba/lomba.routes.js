@@ -21,6 +21,20 @@ router.get(
 );
 
 router.get(
+  '/admin/all',
+  authenticate,
+  authorize({ roles: ['ADMIN'] }),
+  controller.getAllLomba
+);
+
+router.get(
+  '/admin/stats',
+  authenticate,
+  authorize({ roles: ['ADMIN'] }),
+  controller.getLombaStats
+);
+
+router.get(
   '/',
   controller.getLombaById
 );
@@ -46,6 +60,13 @@ router.delete(
   authenticate,
   authorize({ roles: ['ADMIN', 'PANITIA'] }), 
   controller.deleteLomba
+);
+
+router.put(
+  '/status/:id_lomba',
+  authenticate,
+  authorize({ roles: ['ADMIN'] }), 
+  controller.approveLomba
 );
 
 export default router;

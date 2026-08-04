@@ -15,9 +15,13 @@ export async function insertLomba(data) {
       image,
       harga,
       id_user,
-      tanggal_batas_pendaftaran
+      tanggal_batas_pendaftaran,
+      format_lomba,
+      link_panduan,
+      institusi_penyelenggara,
+      kontak_penyelenggara
     )
-    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10, $11, $12)
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10, $11, $12, $13, $14, $15, $16)
     RETURNING id_lomba;
   `;
 
@@ -33,7 +37,11 @@ export async function insertLomba(data) {
     data.image,
     data.harga,
     data.id_user,
-    data.tanggal_batas_pendaftaran
+    data.tanggal_batas_pendaftaran,
+    data.format_lomba,
+    data.link_panduan,
+    data.institusi_penyelenggara,
+    data.kontak_penyelenggara
   ];
 
   const result = await db.query(sql, values);
@@ -83,6 +91,16 @@ export async function getAllLomba(page = 1, limit = 9, filters = {}) {
     }
   }
 
+  if (isValidFilter(filters.status_lomba)) {
+    whereClauses.push(`a.status_lomba = $${paramIndex++}`)
+    queryParams.push(filters.status_lomba)
+  }
+
+  if (filters.is_active) {
+    // Tampilkan hanya yang batas pendaftarannya >= hari ini
+    whereClauses.push(`a.tanggal_batas_pendaftaran >= CURRENT_DATE`)
+  }
+
   const whereClause = whereClauses.length > 0 
     ? `WHERE ${whereClauses.join(' AND ')}` 
     : ''
@@ -98,8 +116,15 @@ export async function getAllLomba(page = 1, limit = 9, filters = {}) {
       a.tanggal_batas_pendaftaran,
       a.deskripsi, 
       a.image,
-      a.harga
+      a.harga,
+      a.status_lomba,
+      a.format_lomba,
+      a.link_panduan,
+      u.nama_instansi AS institusi_penyelenggara,
+      u.nomor_telephone AS kontak_penyelenggara,
+      a.created_at
     FROM lomba a
+    LEFT JOIN master_user u ON a.id_user = u.id_user
     LEFT JOIN master_kategori b ON a.id_kategori = b.id_kategori
     LEFT JOIN master_pendidikan c ON a.id_pendidikan = c.id_pendidikan
     ${whereClause}
@@ -154,11 +179,19 @@ export async function getLombaById(id_lomba) {
       a.deskripsi, 
       a.image,
       a.harga,
+      a.status_lomba,
+      a.alasan_penolakan,
+      a.format_lomba,
+      a.link_panduan,
+      u.nama_instansi AS institusi_penyelenggara,
+      u.nomor_telephone AS kontak_penyelenggara,
+      a.created_at,
       CASE 
         WHEN a.harga > 0 THEN 2
         ELSE 1
       END as id_status_pembayaran
     FROM lomba a
+    LEFT JOIN master_user u ON a.id_user = u.id_user
     LEFT JOIN master_kategori b ON a.id_kategori = b.id_kategori
     LEFT JOIN master_pendidikan c ON a.id_pendidikan = c.id_pendidikan
     LEFT JOIN master_jenis d ON a.id_jenis = d.id_jenis
@@ -185,8 +218,16 @@ export async function getLombaByIdUser(page = 1, limit = 10, id_user) {
       a.deskripsi, 
       a.image,
       a.harga,
-      a.tanggal_batas_pendaftaran
+      a.tanggal_batas_pendaftaran,
+      a.status_lomba,
+      a.alasan_penolakan,
+      a.format_lomba,
+      a.link_panduan,
+      u.nama_instansi AS institusi_penyelenggara,
+      u.nomor_telephone AS kontak_penyelenggara,
+      a.created_at
     FROM lomba a
+    LEFT JOIN master_user u ON a.id_user = u.id_user
     LEFT JOIN master_kategori b ON a.id_kategori = b.id_kategori
     LEFT JOIN master_pendidikan c ON a.id_pendidikan = c.id_pendidikan
     WHERE a.id_user = $1
@@ -233,8 +274,12 @@ export async function updateLomba(id_lomba, data) {
       deskripsi = $8,
       image = $9,
       harga = $10,
-      tanggal_batas_pendaftaran = $11
-    WHERE id_lomba = $12
+      tanggal_batas_pendaftaran = $11,
+      format_lomba = $12,
+      link_panduan = $13,
+      institusi_penyelenggara = $14,
+      kontak_penyelenggara = $15
+    WHERE id_lomba = $16
     RETURNING id_lomba;
   `;
 
@@ -250,6 +295,10 @@ export async function updateLomba(id_lomba, data) {
     data.image,
     data.harga,
     data.tanggal_batas_pendaftaran,
+    data.format_lomba,
+    data.link_panduan,
+    data.institusi_penyelenggara,
+    data.kontak_penyelenggara,
     id_lomba
   ];
 
@@ -331,6 +380,59 @@ export async function deleteLomba(id_lomba) {
     return {
       deleted: false,
       message: 'Gagal menghapus lomba dari database'
+    };
+  }
+}
+
+export async function updateStatusLomba(id_lomba, status_lomba, alasan_penolakan = null) {
+  const sql = `
+    UPDATE lomba
+    SET status_lomba = $1, alasan_penolakan = $2
+    WHERE id_lomba = $3
+    RETURNING id_lomba, status_lomba;
+  `;
+
+  try {
+    const result = await db.query(sql, [status_lomba, alasan_penolakan, id_lomba]);
+    
+    if (result.rowCount === 0) {
+      return {
+        updated: false,
+        message: 'Lomba tidak ditemukan atau gagal diupdate'
+      };
+    }
+    
+    return {
+      updated: true,
+      data: result.rows[0]
+    };
+  } catch (error) {
+    console.error('❌ Model Error updateStatusLomba:', error);
+    return {
+      updated: false,
+      message: 'Gagal mengupdate status lomba'
+    };
+  }
+}
+
+export async function getLombaStats() {
+  const sql = `
+    SELECT 
+      COUNT(*) FILTER (WHERE status_lomba = 'PENDING') as total_pending,
+      COUNT(*) FILTER (WHERE status_lomba = 'APPROVED') as total_approved,
+      COUNT(*) FILTER (WHERE status_lomba = 'REJECTED') as total_rejected
+    FROM lomba
+  `;
+
+  try {
+    const result = await db.query(sql);
+    return result.rows[0];
+  } catch (error) {
+    console.error('❌ Model Error getLombaStats:', error);
+    return {
+      total_pending: 0,
+      total_approved: 0,
+      total_rejected: 0
     };
   }
 }

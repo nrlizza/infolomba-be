@@ -11,6 +11,8 @@ export async function getRiwayatLombaByUser(id_user, page = 1, limit = 10) {
         c.kategori_lomba,
         d.tingkat_pendidikan,
         TO_CHAR(a.tanggal_daftar, 'YYYY-MM-DD') as tanggal_daftar,
+        TO_CHAR(b.tanggal_lomba, 'YYYY-MM-DD') as tanggal_lomba,
+        TO_CHAR(b.tanggal_batas_pendaftaran, 'YYYY-MM-DD') as tanggal_batas_pendaftaran,
         a.status_pembayaran
       FROM riwayat_lomba a
       LEFT JOIN lomba b ON a.id_lomba = b.id_lomba

@@ -161,7 +161,7 @@ export async function updateLomba(id_lomba, data, files, id_user) {
   }
 }
 
-export async function deleteLomba(id_lomba, id_user) {
+export async function deleteLomba(id_lomba, id_user, role = '') {
   try {
     // 1. Cek apakah lomba ada
     const lomba = await model.checkLombaOwnership(id_lomba, id_user);
@@ -174,8 +174,9 @@ export async function deleteLomba(id_lomba, id_user) {
       };
     }
 
-    // 2. Cek kepemilikan
-    if (!lomba.isOwner) {
+    // 2. Cek kepemilikan (bypass jika admin)
+    const isAdmin = role.toUpperCase() === 'ADMIN';
+    if (!lomba.isOwner && !isAdmin) {
       return {
         deleted: false,
         message: 'Anda tidak memiliki akses untuk menghapus lomba ini'
@@ -193,4 +194,12 @@ export async function deleteLomba(id_lomba, id_user) {
       message: error.message || 'Terjadi kesalahan saat menghapus lomba'
     };
   }
+}
+
+export async function updateStatusLomba(id_lomba, status_lomba, alasan_penolakan) {
+  return await model.updateStatusLomba(id_lomba, status_lomba, alasan_penolakan);
+}
+
+export async function getLombaStats() {
+  return await model.getLombaStats();
 }
