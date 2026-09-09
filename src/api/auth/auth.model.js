@@ -24,8 +24,8 @@ export async function loginUser(username, password, role) {
 export async function createUser(data) {
   const sql = `
     INSERT INTO master_user 
-    (name, username, password, email, nomor_telephone, id_pendidikan, nama_instansi, tanggal_lahir, id_role) 
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    (name, username, password, email, nomor_telephone, id_pendidikan, nama_instansi, tanggal_lahir, id_role, jabatan_panitia, bukti_kepanitiaan) 
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
     RETURNING id_user, name, username, email, id_role
   `;
 
@@ -39,6 +39,8 @@ export async function createUser(data) {
     data.nama_instansi,
     data.tanggal_lahir,
     data.id_role,
+    data.jabatan_panitia,
+    data.bukti_kepanitiaan
   ];
 
   const { rows } = await db.query(sql, values);
@@ -58,6 +60,8 @@ export async function getUserProfile(id_user) {
       mu.tanggal_lahir,
       mu.poin,
       mu.id_role,
+      mu.jabatan_panitia,
+      mu.bukti_kepanitiaan,
       mr.role
     FROM master_user mu
     INNER JOIN master_role mr ON mu.id_role = mr.id_role

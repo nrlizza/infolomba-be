@@ -59,7 +59,7 @@ export async function getLombaByIdAndUser(id_lomba, id_user) {
   `
   
   const result = await db.query(sql, [id_lomba, id_user]);
-  return formatResult(result, "get");
+  return formatResult(result, "getAll");
 };
 
 export async function getPoinUser(id_user) {

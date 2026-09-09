@@ -43,6 +43,8 @@ export async function getFavoriteLomba(id_user) {
     LEFT JOIN master_kategori b ON l.id_kategori = b.id_kategori
     LEFT JOIN master_pendidikan c ON l.id_pendidikan = c.id_pendidikan
     WHERE f.id_user = $1
+      AND l.status_lomba = 'APPROVED'
+      AND l.tanggal_batas_pendaftaran >= CURRENT_DATE
     ORDER BY f.created_at DESC
   `;
   const result = await db.query(sql, [id_user]);

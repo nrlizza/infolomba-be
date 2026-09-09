@@ -44,4 +44,6 @@ export const masterUserCreateSchema = z.object({
     .positive("id_role harus positif")
     .optional()
     .nullable(),
+  jabatan_panitia: z.string().max(255).optional().nullable(),
+  bukti_kepanitiaan: z.string().max(500).optional().nullable(),
 });

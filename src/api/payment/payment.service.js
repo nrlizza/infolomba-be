@@ -4,10 +4,21 @@ import { snap } from "../../config/midtrans.js";
 
 export const createPaymentService = async ({ id_user, id_lomba, name, email }) => {
     try {
-        // 1️⃣ ambil data lomba
-        const [lomba, userPoin] = await Promise.all([model.getHtmLombaById(id_lomba), model.getPoinUser(id_user)]);
+        // 1️⃣ ambil data lomba dan cek pendaftaran sebelumnya
+        const [lomba, userPoin, existingRiwayat] = await Promise.all([
+            model.getHtmLombaById(id_lomba), 
+            model.getPoinUser(id_user),
+            model.getLombaByIdAndUser(id_lomba, id_user)
+        ]);
 
         if (!lomba?.data) throw new Error("Lomba tidak ditemukan");
+        
+        const isRegistered = existingRiwayat?.data && 
+                            (Array.isArray(existingRiwayat.data) ? existingRiwayat.data.length > 0 : true);
+
+        if (isRegistered) {
+            throw new Error("Anda sudah mendaftarkan diri di lomba ini!");
+        }
 
         const amount = lomba.data.harga ?? 0;
 
@@ -28,7 +39,7 @@ export const createPaymentService = async ({ id_user, id_lomba, name, email }) =
                 status: "PAID", // langsung PAID
             });
 
-            await model.updatePoinUser(id_user, userPoin?.data?.poin + 10);
+            await model.updatePoinUser(id_user, userPoin?.data?.poin + 20);
 
             return {
                 free: true,
@@ -116,7 +127,7 @@ export const handleMidtransNotification = async (notification) => {
     
     if (statusPembayaran === "PAID" && userPoin < 100) {
         // Beri poin jika pembayaran berhasil
-        await model.updatePoinUser(idUser, userPoin + 10);
+        await model.updatePoinUser(idUser, userPoin + 20);
     }
 };
 
@@ -128,10 +139,21 @@ export async function getLombaByIdAndUser(id_lomba, id_user) {
 export const reedemPoin = async ({ id_user, id_lomba }) => {
     try {
 
-        // 1️⃣ ambil data lomba
-        const [lomba, userPoin] = await Promise.all([model.getHtmLombaById(id_lomba), model.getPoinUser(id_user)]);
+        // 1️⃣ ambil data lomba dan cek pendaftaran sebelumnya
+        const [lomba, userPoin, existingRiwayat] = await Promise.all([
+            model.getHtmLombaById(id_lomba), 
+            model.getPoinUser(id_user),
+            model.getLombaByIdAndUser(id_lomba, id_user)
+        ]);
 
         if (!lomba?.data) throw new Error("Lomba tidak ditemukan");
+
+        const isRegistered = existingRiwayat?.data && 
+                            (Array.isArray(existingRiwayat.data) ? existingRiwayat.data.length > 0 : true);
+
+        if (isRegistered) {
+            throw new Error("Anda sudah mendaftarkan diri di lomba ini!");
+        }
 
         const amount = lomba.data.harga ?? 0;
 
