@@ -19,7 +19,7 @@ export const masterUserCreateSchema = z.object({
     .min(6, "Password minimal 6 karakter")
     .max(255, "Password maksimal 255 karakter"),
   email: z.string().email("Format email tidak valid").max(100, "Email maksimal 100 karakter"),
-  nomor_telephon: z
+  nomor_telephone: z
     .string()
     .regex(indPhoneRegex, "Nomor telepon harus format Indonesia (mis. 0812xxx atau +62812xxx)")
     .optional()

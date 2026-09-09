@@ -34,13 +34,13 @@ export async function createUser(data) {
     data.username,
     data.password,
     data.email,
-    data.nomor_telephone,
-    data.id_pendidikan,
-    data.nama_instansi,
-    data.tanggal_lahir,
-    data.id_role,
-    data.jabatan_panitia,
-    data.bukti_kepanitiaan
+    data.nomor_telephone || null,
+    data.id_pendidikan || null,
+    data.nama_instansi || null,
+    data.tanggal_lahir || null,
+    data.id_role || 3,
+    data.jabatan_panitia || null,
+    data.bukti_kepanitiaan || null
   ];
 
   const { rows } = await db.query(sql, values);

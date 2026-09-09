@@ -2,6 +2,15 @@ import logger from '../utils/logger.js';
 
 export function errorHandler(err, req, res, next) {
    // Tangani error dari Multer
+  if (err.message === 'Invalid credentials') {
+    return res.status(401).json({ message: 'Username atau password salah' });
+  }
+
+  // Tangani Unique Constraint PostgreSQL (username/email sudah terdaftar)
+  if (err.code === '23505') {
+    return res.status(400).json({ message: 'Username atau email sudah digunakan' });
+  }
+
   if (err.code === 'LIMIT_FILE_SIZE') {
     return res.status(400).json({
       status: 'error',
