@@ -14,7 +14,7 @@ export function errorHandler(err, req, res, next) {
   if (err.code === 'LIMIT_FILE_SIZE') {
     return res.status(400).json({
       status: 'error',
-      message: 'File too large. Maximum size allowed is 1MB.',
+      message: 'File too large. Maximum size allowed is 5MB.',
       path: req.originalUrl,
       method: req.method,
       timestamp: new Date().toISOString(),

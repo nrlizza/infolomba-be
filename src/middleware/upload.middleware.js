@@ -11,7 +11,7 @@ const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic'];
 export const upload = (fields = []) => {
   const multerUpload = multer({
     storage,
-    limits: { fileSize: 1 * 1024 * 1024 },
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
     fileFilter: (req, file, cb) => {
       if (!allowedTypes.includes(file.mimetype)) {
         const err = new Error('Invalid file type');
