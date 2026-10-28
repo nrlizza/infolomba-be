@@ -128,11 +128,13 @@ export async function getAllLomba(page = 1, limit = 9, filters = {}) {
       a.link_panduan,
       u.nama_instansi AS institusi_penyelenggara,
       u.nomor_telephone AS kontak_penyelenggara,
+      p.nama_provinsi,
       a.created_at
     FROM lomba a
     LEFT JOIN master_user u ON a.id_user = u.id_user
     LEFT JOIN master_kategori b ON a.id_kategori = b.id_kategori
     LEFT JOIN master_pendidikan c ON a.id_pendidikan = c.id_pendidikan
+    LEFT JOIN master_provinsi p ON a.id_provinsi = p.id_provinsi
     ${whereClause}
     ORDER BY a.id_lomba DESC
     LIMIT $${paramIndex++} OFFSET $${paramIndex++}
