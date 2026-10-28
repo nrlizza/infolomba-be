@@ -194,6 +194,8 @@ export async function getLombaById(id_lomba) {
       a.link_panduan,
       u.nama_instansi AS institusi_penyelenggara,
       u.nomor_telephone AS kontak_penyelenggara,
+      u.jabatan_panitia,
+      u.bukti_kepanitiaan,
       a.created_at,
       CASE 
         WHEN a.harga > 0 THEN 2
@@ -281,15 +283,17 @@ export async function updateLomba(id_lomba, data) {
       nama_lomba = $6,
       tanggal_lomba = $7,
       deskripsi = $8,
-      image = $9,
+      image = COALESCE($9, image),
       harga = $10,
       tanggal_batas_pendaftaran = $11,
       format_lomba = $12,
       link_panduan = $13,
       institusi_penyelenggara = $14,
-      kontak_penyelenggara = $15
+      kontak_penyelenggara = $15,
+      status_lomba = 'PENDING',
+      alasan_penolakan = NULL
     WHERE id_lomba = $16
-    RETURNING id_lomba;
+    RETURNING id_lomba, status_lomba;
   `;
 
   const values = [
