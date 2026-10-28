@@ -96,6 +96,12 @@ export async function getAllLomba(page = 1, limit = 9, filters = {}) {
     queryParams.push(filters.status_lomba)
   }
 
+  if (isValidFilter(filters.search)) {
+    whereClauses.push(`(a.nama_lomba ILIKE ${paramIndex} OR u.nama_instansi ILIKE ${paramIndex})`);
+    queryParams.push(`%${filters.search}%`);
+    paramIndex++;
+  }
+
   if (filters.is_active) {
     // Tampilkan hanya yang batas pendaftarannya >= hari ini
     whereClauses.push(`a.tanggal_batas_pendaftaran >= CURRENT_DATE`)
@@ -136,6 +142,7 @@ export async function getAllLomba(page = 1, limit = 9, filters = {}) {
   const countSql = `
     SELECT COUNT(*) AS total 
     FROM lomba a
+    LEFT JOIN master_user u ON a.id_user = u.id_user
     ${whereClause}
   `
 

@@ -24,7 +24,8 @@ export async function getAllLomba(req, res, next) {
             id_provinsi,
             id_jenis,
             id_status_pembayaran,
-            status_lomba
+            status_lomba,
+            search
         } = req.query;
 
         const filters = {
@@ -32,7 +33,8 @@ export async function getAllLomba(req, res, next) {
             id_pendidikan,
             id_provinsi,
             id_jenis,
-            id_status_pembayaran
+            id_status_pembayaran,
+            search
         };
 
         // If user is ADMIN, they can request any status or all.
